@@ -24,7 +24,7 @@ let getRandomUser = () => {
     ]
 }
 
-app.get("/user", (req, res) => {
+app.get("/", (req, res) => {
     let q = `SELECT COUNT(*) FROM user`;
     try {
         connection.query(q, (err, result) => {
@@ -32,6 +32,18 @@ app.get("/user", (req, res) => {
             let count = result[0]['COUNT(*)'];
             console.log(count);
             res.render("home.ejs",{count});
+        });
+    } catch (err) {
+        console.log(err);
+    }
+})
+
+app.get("/user", (req, res) => {
+    let q = `SELECT * FROM user`;
+    try {
+        connection.query(q, (err, users) => {
+            if (err) throw err;
+            res.render("showUser.ejs",{users});
         });
     } catch (err) {
         console.log(err);
