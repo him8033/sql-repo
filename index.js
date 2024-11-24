@@ -58,8 +58,33 @@ app.get("/user", (req, res) => {
     }
 })
 
-//      goto the edit page for editing the username
+//      goto the add page for adding new user
 
+app.get("/user/add", (req, res) => {
+    res.render("add.ejs")
+})
+
+//      add user process through post method
+
+app.post("/user", (req, res) => {
+    let { username, email, password } = req.body;
+    console.log(username, email, password);
+    let id = faker.string.uuid();
+    console.log(id);
+    let q = `INSERT INTO user (id, username, email, password) VALUES ('${id}','${username}','${email}','${password}')`;
+    try {
+        connection.query(q, (err, result) => {
+            if (err) throw err;
+            console.log(result);
+            res.redirect("/user");
+        });
+    } catch (err) {
+        console.log(err);
+        console.log("some Error In DataBase");
+    }
+})
+
+//      goto the edit page for editing the username
 
 app.get("/user/:id/edit", (req, res) => {
     let { id } = req.params;
@@ -88,9 +113,52 @@ app.patch("/user/:id", (req, res) => {
             let user = result[0];
             if (formPass != user.password) {
                 res.send("Invalid Password!");
-            }else{
+            } else {
                 q2 = `UPDATE user SET username='${newUsername}' WHERE id='${id}'`;
-                connection.query(q2,(err,result) => {
+                connection.query(q2, (err, result) => {
+                    if (err) throw err;
+                    res.redirect("/user");
+                })
+            }
+        });
+    } catch (err) {
+        console.log(err);
+        console.log("some Error In DataBase");
+    }
+})
+
+//      Delete user page 
+
+app.get("/user/:id/delete", (req, res) => {
+    let { id } = req.params;
+    let q = `SELECT * FROM user WHERE id='${id}'`;
+    try {
+        connection.query(q, (err, result) => {
+            if (err) throw err;
+            let user = result[0];
+            res.render("delete.ejs", { user });
+        });
+    } catch (err) {
+        console.log(err);
+        console.log("some Error In DataBase");
+    }
+})
+
+//      Delete process through delete method
+
+app.delete("/user/:id", (req, res) => {
+    let { id } = req.params;
+    let { password: formPass } = req.body;
+    let q = `SELECT * FROM user WHERE id='${id}'`;
+    try {
+        connection.query(q, (err, result) => {
+            if (err) throw err;
+            let user = result[0];
+            if (formPass != user.password) {
+                res.send("Invalid Password!");
+            } else {
+                q2 = `DELETE FROM user WHERE id='${id}'`;
+                connection.query(q2, (err, result) => {
                     if (err) throw err;
                     res.redirect("/user");
                 })

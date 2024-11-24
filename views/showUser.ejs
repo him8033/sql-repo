@@ -11,6 +11,9 @@
     </style>
 </head>
 <body>
+    <form method="get" action="/user/add">
+        <button>Add New User</button>
+    </form>
     <table>
         <tr>
             <th>User ID</th>
@@ -25,6 +28,11 @@
             <td>
                 <form method="GET" action="/user/<%= user.id %>/edit">
                     <button>Edit Username</button>
+                </form>
+            </td>
+            <td>
+                <form method="GET" action="/user/<%= user.id %>/delete">
+                    <button>Delete User</button>
                 </form>
             </td>
         </tr>
